@@ -1,12 +1,40 @@
+buildscript {
+    ext.kotlin_version = '1.0.5-3'
+    repositories {
+        mavenCentral()
+    }
+    dependencies {
+        classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlin_version"
+    }
+}
+
 plugins {
     id 'org.spongepowered.plugin' version '0.8.1'
 }
 
+apply plugin: 'java'
+apply plugin: 'kotlin'
+
 group = pluginGroup
 version = pluginVersion
 
+configurations {
+    embed
+    compile.extendsFrom(embed)
+}
+
 dependencies {
     compile 'org.spongepowered:spongeapi:5.0.0'
+    embed "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
 }
 
 sponge.plugin.id = pluginId
+
+
+sourceSets {
+    main.java.srcDirs += 'src/main/kotlin'
+}
+
+jar {
+    from { configurations.embed.collect { it.isDirectory() ? it : zipTree(it) } }
+}
